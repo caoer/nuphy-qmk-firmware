@@ -178,8 +178,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, LNK_BLE1, LNK_BLE2, LNK_BLE3, LNK_RF,   _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______,           _______,
     _______, _______,  _______,  _______,  _______,  _______,  DEBOUNCE_PRESS_DEC, DEBOUNCE_PRESS_SHOW, DEBOUNCE_PRESS_INC, TOG_DEEP_SLEEP, TOG_USB_SLP, DEV_RESET, SLEEP_MODE, BAT_SHOW, _______,
     TOG_CAPS_IND, SLEEP_TIMEOUT_DEC, SLEEP_TIMEOUT_SHOW, SLEEP_TIMEOUT_INC, _______, _______, DEBOUNCE_RELEASE_DEC, DEBOUNCE_RELEASE_SHOW, DEBOUNCE_RELEASE_INC, _______, _______, _______, _______,           _______,
-    _______,           _______,  _______,  RGB_TEST, _______,  _______,  _______,  MO(4),    RGB_SPD, RGB_SPI, _______, _______,           RGB_VAI, _______,
-    _______, _______,  _______,                                _______,                               _______, MO(1),             RGB_MOD, RGB_VAD, RGB_HUI),
+    _______,           _______,  _______,  RGB_TEST, _______,  _______,  _______,  MO(4),    RM_SPDD, RM_SPDU, _______, _______,           RM_VALU, _______,
+    _______, _______,  _______,                                _______,                               _______, MO(1),             RM_NEXT, RM_VALD, RM_HUEU),
 
 // ============================================
 // LAYER 2: Windows Base
@@ -200,8 +200,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, LNK_BLE1, LNK_BLE2, LNK_BLE3, LNK_RF,   _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______,           _______,
     _______, _______,  _______,  _______,  _______,  _______,  DEBOUNCE_PRESS_DEC, DEBOUNCE_PRESS_SHOW, DEBOUNCE_PRESS_INC, TOG_DEEP_SLEEP, TOG_USB_SLP, DEV_RESET, SLEEP_MODE, BAT_SHOW, _______,
     TOG_CAPS_IND, SLEEP_TIMEOUT_DEC, SLEEP_TIMEOUT_SHOW, SLEEP_TIMEOUT_INC, _______, _______, DEBOUNCE_RELEASE_DEC, DEBOUNCE_RELEASE_SHOW, DEBOUNCE_RELEASE_INC, _______, _______, _______, _______,           _______,
-    _______,           _______,  _______,  RGB_TEST, _______,  _______,  _______,  MO(4),    RGB_SPD, RGB_SPI, _______, _______,           RGB_VAI, _______,
-    _______, _______,  _______,                                _______,                               _______, MO(3),             RGB_MOD, RGB_VAD, RGB_HUI),
+    _______,           _______,  _______,  RGB_TEST, _______,  _______,  _______,  MO(4),    RM_SPDD, RM_SPDU, _______, _______,           RM_VALU, _______,
+    _______, _______,  _______,                                _______,                               _______, MO(3),             RM_NEXT, RM_VALD, RM_HUEU),
 
 // ============================================
 // LAYER 4: Side lighting controls (unchanged)
@@ -211,8 +211,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______,          _______,
     _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______,          _______,
     _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______,                   _______,
-    _______,           _______,  _______,  _______,  _______,  _______,  _______,  _______,  SIDE_SPD,SIDE_SPI,SIDE_MOD_B,_______,         SIDE_VAI,_______,
-    _______, _______,  _______,                                _______,                               _______, MO(4),             SIDE_MOD_A,SIDE_VAD,SIDE_HUI),
+    _______,           _______,  _______,  _______,  _______,  _______,  _______,  _______,  SIDE_SPD,SIDE_SPI,SIDE_MOD, _______,         SIDE_VAI,_______,
+    _______, _______,  _______,                                _______,                               _______, MO(4),             SIDE_MOD, SIDE_VAD,SIDE_HUI),
 
 // ============================================
 // LAYER 5: Reserved (Caps Nav moved to Key Overrides)
