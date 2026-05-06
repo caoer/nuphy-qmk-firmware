@@ -326,15 +326,15 @@ static bool     layer6_gui_active = false;
 static void nav_cleanup(void) {
     if (!nav_key_active) return;
     unregister_code(nav_active_kc);
-    clear_mods();
-    uint8_t restore = nav_active_saved_mods;
-    // LGUI in saved_mods came from KC_LGUI (G on Layer 6).
-    // If G was released before this NAV key, don't re-register left Cmd.
-    // Use MOD_BIT (not MOD_MASK_GUI) to preserve RGUI from MOD_SCLN.
-    if (!layer6_gui_active) {
-        restore &= ~MOD_BIT(KC_LGUI);
+    // Delta-based cleanup: only remove mods WE added, leave physically-held
+    // mods untouched. Fixes stuck-Ctrl when Caps released before NAV key.
+    uint8_t current = get_mods();
+    uint8_t nav_added = current & ~nav_active_saved_mods;
+    // LGUI from G on Layer 6: strip if G already released
+    if (!layer6_gui_active && (current & MOD_BIT(KC_LGUI))) {
+        nav_added |= MOD_BIT(KC_LGUI);
     }
-    set_mods(restore);
+    unregister_mods(nav_added);
     nav_key_active = false;
     nav_active_kc = 0;
     nav_repeat_kc = 0;
@@ -429,7 +429,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     nav_repeat_started = false;
                 }
             } else {
-                nav_cleanup();
+                // Only cleanup if THIS key is the active one.
+                // If another NAV key replaced us, our cleanup already
+                // ran when that key was pressed (line 402).
+                if (nav_active_kc == kc) {
+                    nav_cleanup();
+                }
             }
             return false;
         }
@@ -531,6 +536,39 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         default:
             return TAPPING_TERM;  // 200ms for everything else
     }
+}
+
+// ============================================
+// PER-KEY QUICK TAP TERM
+// ============================================
+// Disable quick-tap for Space: hold must always enter Layer 6, even
+// immediately after a Space tap. Without this, tapping Space then
+// holding within 120ms bypasses Layer 6 entirely (QUICK_TAP_TERM
+// fires instant tap, no hold detection).
+uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case NAV_SPC:
+            return 0;   // never skip hold detection for Space
+        default:
+            return QUICK_TAP_TERM;  // 120ms for everything else
+    }
+}
+
+// ============================================
+// SUSPEND/WAKEUP: Reset all custom state
+// ============================================
+// QMK's clear_keyboard() clears HID report on suspend but does NOT
+// reset user static variables. Without this, state survives USB/BT
+// profile switches — nav_repeat fires ghost keypresses on reconnect.
+void suspend_wakeup_init_user(void) {
+    nav_key_active = false;
+    nav_active_kc = 0;
+    nav_active_saved_mods = 0;
+    layer6_gui_active = false;
+    comm_hyp_held = false;
+    comm_hyp_activated = false;
+    nav_repeat_kc = 0;
+    nav_repeat_started = false;
 }
 
 // ============================================

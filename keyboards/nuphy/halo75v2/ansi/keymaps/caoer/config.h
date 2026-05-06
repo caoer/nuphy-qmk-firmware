@@ -10,6 +10,11 @@
 // Per-key tapping term: Space gets a shorter window for faster typing
 #define TAPPING_TERM_PER_KEY
 
+// Per-key quick tap: disable for Space so hold always enters Layer 6,
+// even immediately after a Space tap. Without this, QUICK_TAP_TERM
+// causes double-tap-hold to bypass Layer 6 entirely.
+#define QUICK_TAP_TERM_PER_KEY
+
 // QUICK_TAP_TERM: After tapping a key, pressing it again within this window
 // instantly registers as a tap (no hold-detection delay). Makes repeated
 // spaces feel instant when typing "word.  Next sentence".
