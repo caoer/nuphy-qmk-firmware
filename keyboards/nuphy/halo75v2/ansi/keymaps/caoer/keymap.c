@@ -15,10 +15,10 @@
 // , = Hyper when held (except comma+space = ", ")
 //
 // Hyper = Cmd+Shift+Alt (3 modifiers, no Ctrl)
-// QMK's built-in HYPR() includes Ctrl — define our own.
-#define MY_HYPR(kc)   LSFT(LALT(LGUI(kc)))
-#define MY_HYPR_T(kc) MT(MOD_LSFT | MOD_LALT | MOD_LGUI, kc)
-#define MY_HYPR_MODS  (MOD_BIT(KC_LSFT) | MOD_BIT(KC_LALT) | MOD_BIT(KC_LGUI))
+// True Hyper: all 4 mods. No Carbon superset exists → safest for macOS hotkeys.
+#define MY_HYPR(kc)   LCTL(LSFT(LALT(LGUI(kc))))
+#define MY_HYPR_T(kc) MT(MOD_LCTL | MOD_LSFT | MOD_LALT | MOD_LGUI, kc)
+#define MY_HYPR_MODS  (MOD_BIT(KC_LCTL) | MOD_BIT(KC_LSFT) | MOD_BIT(KC_LALT) | MOD_BIT(KC_LGUI))
 
 #define MOD_SCLN RGUI_T(KC_SCLN)  // ; = Cmd
 #define MOD_QUOT RCTL_T(KC_QUOT)  // ' = Ctrl
@@ -46,11 +46,18 @@
 // Caps+Space+HJKL → Ctrl+Alt+Shift+HJKL (move) — Caps Ctrl converted to Shift
 // Shift+Space+HJKL → Ctrl+Shift+HJKL (join-with) — Shift replaces base, drops Alt
 // Option+Space+HJKL → Cmd+Shift+Alt+HJKL (swap) — Hyper (no Ctrl)
-// Space+G+HJKL → Ctrl+Alt+Cmd+HJKL (move to monitor) — Cmd from G passes through
 #define NAV_H (QK_USER + 1)
 #define NAV_J (QK_USER + 2)
 #define NAV_K (QK_USER + 3)
 #define NAV_L (QK_USER + 4)
+
+// ============================================
+// HYPER KEY: Pure modifier, no mod-tap machinery
+// ============================================
+// MY_HYPR_T(KC_NO) caused logout on double-press — KC_NO (0x00) through
+// NuPhy firmware's mod-tap path sends stray keycodes. This custom keycode
+// bypasses mod-tap entirely: hold = Hyper mods, release = clean unregister.
+#define HYPR_KEY (QK_USER + 5)
 
 // ============================================
 // SPACE NAV LAYER (Layer 6)
@@ -63,7 +70,6 @@
 // TAP DANCE DEFINITIONS
 // ============================================
 enum {
-    TD_F5_F15,    // Tap = F5, Hold = F16 (SuperWhisper)
     TD_F3_MCTL,   // Tap = F3, Hold = Mission Control
     TD_F10_MUTE,  // Tap = F10, Hold = Mute
 };
@@ -85,26 +91,6 @@ static uint8_t dance_state(tap_dance_state_t *state) {
         else return TD_SINGLE_HOLD;
     }
     return TD_NONE;
-}
-
-// F5 tap dance: tap = F5, hold = F16 (SuperWhisper)
-// Note: F14/F15 are mapped to brightness on macOS by default
-static tap_dance_tap_hold_t td_f5_state = {false, TD_NONE};
-
-void td_f5_finished(tap_dance_state_t *state, void *user_data) {
-    td_f5_state.state = dance_state(state);
-    switch (td_f5_state.state) {
-        case TD_SINGLE_TAP:  register_code(KC_F5); break;
-        case TD_SINGLE_HOLD: register_code(KC_F16); break;
-    }
-}
-
-void td_f5_reset(tap_dance_state_t *state, void *user_data) {
-    switch (td_f5_state.state) {
-        case TD_SINGLE_TAP:  unregister_code(KC_F5); break;
-        case TD_SINGLE_HOLD: unregister_code(KC_F16); break;
-    }
-    td_f5_state.state = TD_NONE;
 }
 
 // F3 tap dance: tap = F3, hold = Mission Control (Ctrl+Up)
@@ -152,7 +138,6 @@ void td_f10_reset(tap_dance_state_t *state, void *user_data) {
 }
 
 tap_dance_action_t tap_dance_actions[] = {
-    [TD_F5_F15] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_f5_finished, td_f5_reset),
     [TD_F3_MCTL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_f3_finished, td_f3_reset),
     [TD_F10_MUTE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_f10_finished, td_f10_reset),
 };
@@ -163,12 +148,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // LAYER 0: Mac Base
 // ============================================
 [0] = LAYOUT_ansi_84(
-    KC_ESC,  KC_F1,    KC_F2,    TD(TD_F3_MCTL), KC_F4, TD(TD_F5_F15), KC_F6, KC_F7, KC_F8, KC_F9, TD(TD_F10_MUTE), KC_F11, KC_F12, MAC_PRTA, KC_INS, MY_HYPR(KC_N),
+    KC_ESC,  KC_F1,    KC_F2,    TD(TD_F3_MCTL), KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, TD(TD_F10_MUTE), KC_F11, KC_F12, MAC_PRTA, KC_INS, MY_HYPR(KC_N),
     KC_GRV,  KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,           MY_HYPR(KC_M),
     KC_TAB,  KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,           MY_HYPR(KC_COMM),
     CAPS_NAV, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, MOD_SCLN, MOD_QUOT, KC_ENT,                     MY_HYPR(KC_DOT),
     KC_LSFT,           KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     COMM_HYP, KC_DOT,  MOD_SLSH, KC_RSFT,           KC_UP,   MY_HYPR(KC_SLSH),
-    MY_HYPR_T(KC_NO), KC_LOPT,  KC_LCMD,                                NAV_SPC,                              KC_RCMD, MO(1),             KC_LEFT, KC_DOWN, KC_RIGHT),
+    HYPR_KEY, KC_LOPT,  KC_LCMD,                                NAV_SPC,                              KC_RCMD, MO(1),             KC_LEFT, KC_DOWN, KC_RIGHT),
 
 // ============================================
 // LAYER 1: Mac Fn (media keys on F-row)
@@ -234,7 +219,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //             F = MO(7) → display focus sublayer (Space+F+HJKL = Cmd+Alt+HJKL)
 //             C = F17 (float cycle), X = F18 (float fullscreen), Z = F20 (slow paste)
 // WM:         1-9 = LCA(KC_1-9) → workspace switch
-//             G = KC_LGUI → hold G+1-9 for move-to-workspace, G+HJKL for move-to-display
+//             G = KC_F16 → window mode modal trigger (Hammerspoon)
 // Hyper cluster (top-right physical keys, Layer 0 passthrough):
 //             DEL=Hyper+N, HOME=Hyper+M, END=Hyper+,, PGUP=Hyper+., PGDN=Hyper+/
 // ============================================
@@ -242,7 +227,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______,  _______,  MAC_TASK, _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______, _______, _______,
     _______, LCA(KC_1), LCA(KC_2), LCA(KC_3), LCA(KC_4), LCA(KC_5), LCA(KC_6), LCA(KC_7), LCA(KC_8), LCA(KC_9), _______, _______, _______, _______,          _______,
     LCA(KC_TAB), _______,  KC_F19,   MY_HYPR(KC_E), KC_F13, LCA(KC_T), KC_HOME, KC_PGUP, KC_PGDN,  KC_END,  _______, LCA(KC_LBRC), LCA(KC_RBRC), _______,          _______,
-    _______, MY_HYPR(KC_A), MY_HYPR(KC_S), MY_HYPR(KC_D), MO(7), KC_LGUI, NAV_H, NAV_J, NAV_K, NAV_L, _______, _______, _______,  _______,
+    _______, MY_HYPR(KC_A), MY_HYPR(KC_S), MY_HYPR(KC_D), MO(7), KC_F16, NAV_H, NAV_J, NAV_K, NAV_L, _______, _______, _______,  _______,
     _______,           KC_F20,   KC_F18,   KC_F17,   MY_HYPR(KC_V), _______, _______, _______, _______, _______, _______, _______,          _______, _______,
     _______, _______,  _______,                                _______,                               _______, _______,          _______, _______, _______),
 
@@ -319,9 +304,9 @@ static bool     nav_key_active = false;
 static uint16_t nav_active_kc = 0;          // KC_H/J/K/L currently registered
 static uint8_t  nav_active_saved_mods = 0;  // mods to restore on cleanup
 
-// KC_LGUI on Layer 6 G position — same ghost-release class as NAV keys.
-// Without tracking, releasing Space before G leaves Cmd stuck forever.
-static bool     layer6_gui_active = false;
+// KC_F16 on Layer 6 G position — same ghost-release class as NAV keys.
+// Without tracking, releasing Space before G leaves F16 stuck forever.
+static bool     layer6_f16_active = false;
 
 static void nav_cleanup(void) {
     if (!nav_key_active) return;
@@ -330,10 +315,6 @@ static void nav_cleanup(void) {
     // mods untouched. Fixes stuck-Ctrl when Caps released before NAV key.
     uint8_t current = get_mods();
     uint8_t nav_added = current & ~nav_active_saved_mods;
-    // LGUI from G on Layer 6: strip if G already released
-    if (!layer6_gui_active && (current & MOD_BIT(KC_LGUI))) {
-        nav_added |= MOD_BIT(KC_LGUI);
-    }
     unregister_mods(nav_added);
     nav_key_active = false;
     nav_active_kc = 0;
@@ -385,7 +366,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // Caps (Ctrl) → Ctrl+Alt+Shift+key (move)
         // Shift       → Ctrl+Shift+key (join-with)
         // Option (Alt)→ Cmd+Shift+Alt+key (swap) — Hyper
-        // G (Cmd)     → Ctrl+Alt+Cmd+key (move to monitor)
         // ============================================
         case NAV_H:
         case NAV_J:
@@ -413,7 +393,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     // Option → Cmd+Shift+Alt (swap) — Hyper without Ctrl
                     new_mods = MY_HYPR_MODS;
                 }
-                // G (Cmd) → pass through for display move
+                // Cmd (physical key) → pass through for monitor move
                 if (nav_active_saved_mods & MOD_MASK_GUI) {
                     new_mods |= MOD_BIT(KC_LGUI);
                 }
@@ -452,27 +432,36 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
 
-        // KC_LGUI on Layer 6 G position — track press/release for cleanup.
-        case KC_LGUI:
+        // KC_F16 on Layer 6 G position — track press/release for cleanup.
+        case KC_F16:
             if (record->event.pressed) {
                 if (IS_LAYER_ON(6)) {
-                    layer6_gui_active = true;
+                    layer6_f16_active = true;
                 }
             } else {
-                layer6_gui_active = false;
+                layer6_f16_active = false;
             }
             return true;
 
         // Ghost release: Space released before G — layer reverted to 0,
-        // so G's release arrives as KC_G instead of KC_LGUI.
+        // so G's release arrives as KC_G instead of KC_F16.
         // Same class of bug as NAV_H/J/K/L ghost releases.
         case KC_G:
-            if (!record->event.pressed && layer6_gui_active) {
-                unregister_code(KC_LGUI);
-                layer6_gui_active = false;
+            if (!record->event.pressed && layer6_f16_active) {
+                unregister_code(KC_F16);
+                layer6_f16_active = false;
                 return false;
             }
             return true;
+
+        // Pure Hyper key — no mod-tap, no tap keycode, no stray events.
+        case HYPR_KEY:
+            if (record->event.pressed) {
+                register_mods(MY_HYPR_MODS);
+            } else {
+                unregister_mods(MY_HYPR_MODS);
+            }
+            return false;
 
         default:
             if (record->event.pressed && comm_hyp_held && !comm_hyp_activated) {
@@ -516,9 +505,9 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         if (nav_key_active) {
             nav_cleanup();
         }
-        if (layer6_gui_active) {
-            unregister_code(KC_LGUI);
-            layer6_gui_active = false;
+        if (layer6_f16_active) {
+            unregister_code(KC_F16);
+            layer6_f16_active = false;
         }
     }
     return state;
@@ -564,7 +553,7 @@ void suspend_wakeup_init_user(void) {
     nav_key_active = false;
     nav_active_kc = 0;
     nav_active_saved_mods = 0;
-    layer6_gui_active = false;
+    layer6_f16_active = false;
     comm_hyp_held = false;
     comm_hyp_activated = false;
     nav_repeat_kc = 0;
