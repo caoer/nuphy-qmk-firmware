@@ -27,8 +27,8 @@
 // ============================================
 // CAPS LOCK = Ctrl (hold) / Esc (tap)
 // ============================================
-// HJKL arrow navigation via Key Overrides (Ctrl+HJKL → arrows)
-// All other Ctrl combos work naturally (Ctrl+C, Ctrl+V, etc.)
+// Ctrl+HJKL → arrow keys via Key Overrides (all other Ctrl combos pass through)
+// Key Override has GUI negmod: Hyper (includes Ctrl) + HJKL sends letter, not arrow
 #define CAPS_NAV LCTL_T(KC_ESC)
 
 // All alpha keys are plain keys for clean fast typing
@@ -40,16 +40,14 @@
 #define COMM_HYP (QK_USER + 0)  // , = Hyper when held, but comma+space = ", "
 
 // ============================================
-// NAV HJKL: Custom keycodes for Caps+Space differentiation
+// SPACE NAV CTRL+HJKL: Custom keycodes for vim-tmux-navigator
 // ============================================
-// Space+HJKL → Ctrl+Alt+HJKL (focus)
-// Caps+Space+HJKL → Ctrl+Alt+Shift+HJKL (move) — Caps Ctrl converted to Shift
-// Shift+Space+HJKL → Ctrl+Shift+HJKL (join-with) — Shift replaces base, drops Alt
-// Option+Space+HJKL → Cmd+Shift+Alt+HJKL (swap) — Hyper (no Ctrl)
-#define NAV_H (QK_USER + 1)
-#define NAV_J (QK_USER + 2)
-#define NAV_K (QK_USER + 3)
-#define NAV_L (QK_USER + 4)
+// Space+HJKL → Ctrl+HJKL (pane switching). Uses register_code() directly
+// to bypass Key Override (which would convert Ctrl+H to arrow on Layer 0).
+#define CTRL_H (QK_USER + 1)
+#define CTRL_J (QK_USER + 2)
+#define CTRL_K (QK_USER + 3)
+#define CTRL_L (QK_USER + 4)
 
 // ============================================
 // HYPER KEY: Pure modifier, no mod-tap machinery
@@ -63,7 +61,7 @@
 // SPACE NAV LAYER (Layer 6)
 // ============================================
 // Space = Nav layer 6 when held, Space when tapped
-// Layer 6: YUIO = Home/PgUp/PgDn/End, HJKL = NAV custom keycodes, app launchers
+// Layer 6: YUIO = Home/PgUp/PgDn/End, HJKL = Ctrl+HJKL, app launchers
 #define NAV_SPC LT(6, KC_SPC)
 
 // ============================================
@@ -200,8 +198,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______,  _______,                                _______,                               _______, MO(4),             SIDE_MOD, SIDE_VAD,SIDE_HUI),
 
 // ============================================
-// LAYER 5: Reserved (Caps Nav moved to Key Overrides)
-// Kept as transparent passthrough to preserve layer numbering
+// LAYER 5: Reserved
 // ============================================
 [5] = LAYOUT_ansi_84(
     _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______, _______, _______,
@@ -213,33 +210,32 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 // ============================================
 // LAYER 6: Space Nav (Hold Space)
-// Right hand: YUIO = Home/PgUp/PgDn/End, HJKL = NAV custom (AeroSpace focus/move/join/swap)
+// Right hand: YUIO = Home/PgUp/PgDn/End, HJKL = Ctrl+HJKL (vim-tmux-navigator)
 // Left hand:  App launchers via MY_HYPR(KC_x) → Hammerspoon toggleApp
-//             R = F13 (Raycast), W = F19 (WezTerm dialog), Tab = LCA(Tab) → WS toggle
-//             F = MO(7) → display focus sublayer (Space+F+HJKL = Cmd+Alt+HJKL)
+//             R = F13 (Raycast), W = F19 (WezTerm dialog)
 //             C = F17 (float cycle), X = F18 (float fullscreen), Z = F20 (slow paste)
-// WM:         1-9 = LCA(KC_1-9) → workspace switch
 //             G = KC_F16 → window mode modal trigger (Hammerspoon)
 // Hyper cluster (top-right physical keys, Layer 0 passthrough):
 //             DEL=Hyper+N, HOME=Hyper+M, END=Hyper+,, PGUP=Hyper+., PGDN=Hyper+/
+// AeroSpace removed: Space+1-9/Tab/[/]/T (Ctrl+Alt+…) workspace keys retired → transparent.
 // ============================================
 [6] = LAYOUT_ansi_84(
     _______, _______,  _______,  MAC_TASK, _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______, _______, _______,
-    _______, LCA(KC_1), LCA(KC_2), LCA(KC_3), LCA(KC_4), LCA(KC_5), LCA(KC_6), LCA(KC_7), LCA(KC_8), LCA(KC_9), _______, _______, _______, _______,          _______,
-    LCA(KC_TAB), _______,  KC_F19,   MY_HYPR(KC_E), KC_F13, LCA(KC_T), KC_HOME, KC_PGUP, KC_PGDN,  KC_END,  _______, LCA(KC_LBRC), LCA(KC_RBRC), _______,          _______,
-    _______, MY_HYPR(KC_A), MY_HYPR(KC_S), MY_HYPR(KC_D), MO(7), KC_F16, NAV_H, NAV_J, NAV_K, NAV_L, _______, _______, _______,  _______,
+    _______, _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______, _______, _______, _______,          _______,
+    _______,     _______,  KC_F19,   MY_HYPR(KC_E), KC_F13, _______,   KC_HOME, KC_PGUP, KC_PGDN,  KC_END,  _______, _______,      _______,      _______,          _______,
+    _______, MY_HYPR(KC_A), MY_HYPR(KC_S), MY_HYPR(KC_D), _______, KC_F16, CTRL_H, CTRL_J, CTRL_K, CTRL_L, _______, _______, _______,  _______,
     _______,           KC_F20,   KC_F18,   KC_F17,   MY_HYPR(KC_V), _______, _______, _______, _______, _______, _______, _______,          _______, _______,
     _______, _______,  _______,                                _______,                               _______, _______,          _______, _______, _______),
 
 // ============================================
-// LAYER 7: Display Focus (Space+F sublayer)
-// Space+F+HJKL → Cmd+Alt+HJKL → Hammerspoon display focus
+// LAYER 7: Reserved (display focus sublayer removed — AeroSpace gone)
+// Kept as transparent passthrough to preserve layer numbering.
 // ============================================
 [7] = LAYOUT_ansi_84(
     _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______, _______, _______,
     _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______,          _______,
     _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______,          _______,
-    _______, _______,  _______,  _______,  _______,  _______, LAG(KC_H), LAG(KC_J), LAG(KC_K), LAG(KC_L), _______, _______, _______,              _______,
+    _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______,                   _______,
     _______,           _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______,          _______, _______,
     _______, _______,  _______,                                _______,                               _______, _______,          _______, _______, _______),
 };
@@ -252,75 +248,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Additional modifiers (Shift, Cmd, Alt) pass through naturally.
 // e.g. Caps+Shift+H = Shift+Left, Caps+Shift+Cmd+H = Shift+Cmd+Left
 //
-// Excluded on Layer 6 (Space Nav): LCA(KC_H) must send Ctrl+Alt+H (letter),
-// not Ctrl+Alt+Left (arrow), so AeroSpace can bind focus to Ctrl+Alt+HJKL.
-// Negative mod GUI: suppresses override when Cmd is held (i.e. Hyper combos),
-// so Hyper+HJKL sends Hyper+letter (not Hyper+arrow) for AeroSpace move binding.
-#define KO_LAYERS (~(1 << 6))
-const key_override_t nav_h = ko_make_with_layers_and_negmods(MOD_MASK_CTRL, KC_H, KC_LEFT, KO_LAYERS, MOD_MASK_GUI);
-const key_override_t nav_j = ko_make_with_layers_and_negmods(MOD_MASK_CTRL, KC_J, KC_DOWN, KO_LAYERS, MOD_MASK_GUI);
-const key_override_t nav_k = ko_make_with_layers_and_negmods(MOD_MASK_CTRL, KC_K, KC_UP, KO_LAYERS, MOD_MASK_GUI);
-const key_override_t nav_l = ko_make_with_layers_and_negmods(MOD_MASK_CTRL, KC_L, KC_RGHT, KO_LAYERS, MOD_MASK_GUI);
+// Negative mod GUI: suppresses override when Cmd is held, so
+// Hyper+HJKL (which includes Ctrl) sends Hyper+letter, not Hyper+arrow.
+const key_override_t nav_h = ko_make_with_layers_negmods_and_options(MOD_MASK_CTRL, KC_H, KC_LEFT, ~0, MOD_MASK_GUI, ko_options_default);
+const key_override_t nav_j = ko_make_with_layers_negmods_and_options(MOD_MASK_CTRL, KC_J, KC_DOWN, ~0, MOD_MASK_GUI, ko_options_default);
+const key_override_t nav_k = ko_make_with_layers_negmods_and_options(MOD_MASK_CTRL, KC_K, KC_UP, ~0, MOD_MASK_GUI, ko_options_default);
+const key_override_t nav_l = ko_make_with_layers_negmods_and_options(MOD_MASK_CTRL, KC_L, KC_RGHT, ~0, MOD_MASK_GUI, ko_options_default);
 
-// Modifier→F-key overrides (float_c_ko, float_f_ko, paste_v_ko) REMOVED.
-// They suffered from stale-modifier leaks: physical Ctrl/Cmd/Alt stay held
-// when the F-key fires, so macOS sees Ctrl+Cmd+F14 instead of bare F14.
-// F14/F15 are also hardware-reserved for brightness on macOS.
-//
-// Replacement: these actions now live on Layer 6 (Space+C/X/Z → F17/F18/F20).
-// Layer-tap keys produce zero leading modifier events — clean single triggers.
 const key_override_t *key_overrides[] = {
     &nav_h, &nav_j, &nav_k, &nav_l,
     NULL
 };
 
-// ============================================
-// NAV RESIZE KEY REPEAT
-// ============================================
-// QMK-level key repeat for join-with (Shift+Space+HJKL → Ctrl+Shift+HJKL).
-// AeroSpace ignores OS key repeat, so we retrigger at firmware level.
-static uint16_t nav_repeat_kc = 0;
-static uint8_t  nav_repeat_mods = 0;
-static uint16_t nav_repeat_timer = 0;
-static bool     nav_repeat_started = false;
-
-#define NAV_REPEAT_DELAY 200  // ms before repeat begins
-#define NAV_REPEAT_RATE   50  // ms between repeats
-
-// ============================================
-// NAV KEY LIFECYCLE TRACKING
-// ============================================
-// Fixes stuck-modifier bug: when Space (layer-tap) is released before
-// a NAV key, Layer 6 deactivates and the release event arrives as
-// KC_H/J/K/L (Layer 0) instead of NAV_H/J/K/L (Layer 6). Without
-// tracking, the cleanup code in the NAV handler never runs, leaving
-// Ctrl+Alt permanently registered in the USB HID report.
-//
-// Three safety nets, any one of which is sufficient:
-// 1. nav_cleanup() on NAV key release (normal path)
-// 2. nav_cleanup() on Layer 6 deactivation (layer_state_set_user)
-// 3. nav_cleanup() on KC_H/J/K/L release when nav_key_active (ghost release)
-static bool     nav_key_active = false;
-static uint16_t nav_active_kc = 0;          // KC_H/J/K/L currently registered
-static uint8_t  nav_active_saved_mods = 0;  // mods to restore on cleanup
-
-// KC_F16 on Layer 6 G position — same ghost-release class as NAV keys.
+// KC_F16 on Layer 6 G position — ghost-release tracking.
 // Without tracking, releasing Space before G leaves F16 stuck forever.
 static bool     layer6_f16_active = false;
 
-static void nav_cleanup(void) {
-    if (!nav_key_active) return;
-    unregister_code(nav_active_kc);
-    // Delta-based cleanup: only remove mods WE added, leave physically-held
-    // mods untouched. Fixes stuck-Ctrl when Caps released before NAV key.
-    uint8_t current = get_mods();
-    uint8_t nav_added = current & ~nav_active_saved_mods;
-    unregister_mods(nav_added);
-    nav_key_active = false;
-    nav_active_kc = 0;
-    nav_repeat_kc = 0;
-    nav_repeat_started = false;
-}
+// Ghost-release tracking for Space Nav (Layer 6) Ctrl+HJKL keys.
+// If Space released before H/J/K/L, layer reverts and release arrives as KC_H etc.
+static uint16_t layer6_ctrl_active_kc = 0;
 
 // ============================================
 // COMMA-HYPER: Custom handling for comma+space exception
@@ -360,78 +306,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
 
-        // ============================================
-        // NAV HJKL: Modifier differentiation
-        // No mod      → Ctrl+Alt+key (focus)
-        // Caps (Ctrl) → Ctrl+Alt+Shift+key (move)
-        // Shift       → Ctrl+Shift+key (join-with)
-        // Option (Alt)→ Cmd+Shift+Alt+key (swap) — Hyper
-        // ============================================
-        case NAV_H:
-        case NAV_J:
-        case NAV_K:
-        case NAV_L: {
-            uint16_t kc;
-            switch (keycode) {
-                case NAV_H: kc = KC_H; break;
-                case NAV_J: kc = KC_J; break;
-                case NAV_K: kc = KC_K; break;
-                default:    kc = KC_L; break;
-            }
-            if (record->event.pressed) {
-                nav_cleanup();  // clear any prior stuck state
-                nav_active_saved_mods = get_mods();
-                clear_mods();
-                uint8_t new_mods = MOD_BIT(KC_LCTL) | MOD_BIT(KC_LALT);
-                if (nav_active_saved_mods & MOD_MASK_CTRL) {
-                    // Caps → Ctrl+Alt+Shift (move)
-                    new_mods |= MOD_BIT(KC_LSFT);
-                } else if (nav_active_saved_mods & MOD_MASK_SHIFT) {
-                    // Shift → Ctrl+Shift (join-with) — drop Alt
-                    new_mods = MOD_BIT(KC_LCTL) | MOD_BIT(KC_LSFT);
-                } else if (nav_active_saved_mods & MOD_MASK_ALT) {
-                    // Option → Cmd+Shift+Alt (swap) — Hyper without Ctrl
-                    new_mods = MY_HYPR_MODS;
-                }
-                // Cmd (physical key) → pass through for monitor move
-                if (nav_active_saved_mods & MOD_MASK_GUI) {
-                    new_mods |= MOD_BIT(KC_LGUI);
-                }
-                set_mods(new_mods);
-                register_code(kc);
-                nav_key_active = true;
-                nav_active_kc = kc;
-                // Start firmware repeat for resize
-                if (nav_active_saved_mods & MOD_MASK_SHIFT && !(nav_active_saved_mods & MOD_MASK_CTRL)) {
-                    nav_repeat_kc = kc;
-                    nav_repeat_mods = new_mods;
-                    nav_repeat_timer = timer_read();
-                    nav_repeat_started = false;
-                }
-            } else {
-                // Only cleanup if THIS key is the active one.
-                // If another NAV key replaced us, our cleanup already
-                // ran when that key was pressed (line 402).
-                if (nav_active_kc == kc) {
-                    nav_cleanup();
-                }
-            }
-            return false;
-        }
-
-        // Ghost release: Space released before HJKL — layer reverted to 0,
-        // so the release arrives as KC_H/J/K/L instead of NAV_H/J/K/L.
-        // Catch it here and run the cleanup that would have run above.
-        case KC_H:
-        case KC_J:
-        case KC_K:
-        case KC_L:
-            if (!record->event.pressed && nav_key_active && nav_active_kc == keycode) {
-                nav_cleanup();
-                return false;  // consumed — don't emit a stray letter
-            }
-            return true;
-
         // KC_F16 on Layer 6 G position — track press/release for cleanup.
         case KC_F16:
             if (record->event.pressed) {
@@ -450,6 +324,53 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (!record->event.pressed && layer6_f16_active) {
                 unregister_code(KC_F16);
                 layer6_f16_active = false;
+                return false;
+            }
+            return true;
+
+        // ============================================
+        // CTRL+HJKL: Space Nav vim-tmux-navigator keys
+        // ============================================
+        // Uses register_code() directly to bypass Key Override
+        // (which would convert Ctrl+H to Left arrow on Layer 0).
+        case CTRL_H:
+        case CTRL_J:
+        case CTRL_K:
+        case CTRL_L: {
+            uint16_t kc;
+            switch (keycode) {
+                case CTRL_H: kc = KC_H; break;
+                case CTRL_J: kc = KC_J; break;
+                case CTRL_K: kc = KC_K; break;
+                default:     kc = KC_L; break;
+            }
+            if (record->event.pressed) {
+                // Clean up any prior stuck state
+                if (layer6_ctrl_active_kc) {
+                    unregister_code(layer6_ctrl_active_kc);
+                    unregister_mods(MOD_BIT(KC_LCTL));
+                }
+                register_mods(MOD_BIT(KC_LCTL));
+                register_code(kc);
+                layer6_ctrl_active_kc = kc;
+            } else {
+                unregister_code(kc);
+                unregister_mods(MOD_BIT(KC_LCTL));
+                layer6_ctrl_active_kc = 0;
+            }
+            return false;
+        }
+
+        // Ghost releases — Space released before HJKL,
+        // layer reverted to 0, release arrives as plain alpha.
+        case KC_H:
+        case KC_J:
+        case KC_K:
+        case KC_L:
+            if (!record->event.pressed && layer6_ctrl_active_kc == keycode) {
+                unregister_code(keycode);
+                unregister_mods(MOD_BIT(KC_LCTL));
+                layer6_ctrl_active_kc = 0;
                 return false;
             }
             return true;
@@ -479,31 +400,18 @@ void matrix_scan_user(void) {
         register_mods(MY_HYPR_MODS);
         comm_hyp_activated = true;
     }
-
-    // NAV resize key repeat — retrigger keydown at firmware level
-    if (nav_repeat_kc) {
-        uint16_t elapsed = timer_elapsed(nav_repeat_timer);
-        if (!nav_repeat_started && elapsed > NAV_REPEAT_DELAY) {
-            nav_repeat_started = true;
-            nav_repeat_timer = timer_read();
-        } else if (nav_repeat_started && elapsed > NAV_REPEAT_RATE) {
-            unregister_code(nav_repeat_kc);
-            register_code(nav_repeat_kc);
-            nav_repeat_timer = timer_read();
-        }
-    }
 }
 
 // ============================================
-// LAYER CHANGE: Clean up NAV state when Layer 6 deactivates
+// LAYER CHANGE: Clean up ghost keys when Layer 6 deactivates
 // ============================================
-// Second safety net: if both the ghost release handler AND the NAV
-// release handler miss (e.g., key released during the same scan cycle
-// as the layer change), this catches it at the layer-state level.
 layer_state_t layer_state_set_user(layer_state_t state) {
+    // Clean up Space Nav (Layer 6) ghost keys
     if (!layer_state_cmp(state, 6)) {
-        if (nav_key_active) {
-            nav_cleanup();
+        if (layer6_ctrl_active_kc) {
+            unregister_code(layer6_ctrl_active_kc);
+            unregister_mods(MOD_BIT(KC_LCTL));
+            layer6_ctrl_active_kc = 0;
         }
         if (layer6_f16_active) {
             unregister_code(KC_F16);
@@ -550,14 +458,10 @@ uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
 // reset user static variables. Without this, state survives USB/BT
 // profile switches — nav_repeat fires ghost keypresses on reconnect.
 void suspend_wakeup_init_user(void) {
-    nav_key_active = false;
-    nav_active_kc = 0;
-    nav_active_saved_mods = 0;
     layer6_f16_active = false;
+    layer6_ctrl_active_kc = 0;
     comm_hyp_held = false;
     comm_hyp_activated = false;
-    nav_repeat_kc = 0;
-    nav_repeat_started = false;
 }
 
 // ============================================
