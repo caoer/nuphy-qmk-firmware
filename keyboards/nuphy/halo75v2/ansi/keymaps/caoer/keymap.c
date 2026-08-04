@@ -145,12 +145,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ============================================
 // LAYER 0: Mac Base
 // ============================================
+// Right column = free F-keys; WezTerm expands them to herdr chords (see common.lua).
+//   DEL=F18→prefix+z zoom | HOME=F23→alt+up | END=F24→alt+down
+//   PGUP=F21→alt+shift+k | PGDN=F22→alt+shift+j
+// Insert stays KC_INS; WezTerm maps Insert → alt+1 (focus_agent rank 1).
+// PrtSc slot: Cmd+Shift+5 (macOS screenshot UI), was Cmd+Shift+4.
 [0] = LAYOUT_ansi_84(
-    KC_ESC,  KC_F1,    KC_F2,    TD(TD_F3_MCTL), KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, TD(TD_F10_MUTE), KC_F11, KC_F12, MAC_PRTA, KC_INS, MY_HYPR(KC_N),
-    KC_GRV,  KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,           MY_HYPR(KC_M),
-    KC_TAB,  KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,           MY_HYPR(KC_COMM),
-    CAPS_NAV, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, MOD_SCLN, MOD_QUOT, KC_ENT,                     MY_HYPR(KC_DOT),
-    KC_LSFT,           KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     COMM_HYP, KC_DOT,  MOD_SLSH, KC_RSFT,           KC_UP,   MY_HYPR(KC_SLSH),
+    KC_ESC,  KC_F1,    KC_F2,    TD(TD_F3_MCTL), KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, TD(TD_F10_MUTE), KC_F11, KC_F12, G(S(KC_5)), KC_INS, KC_F18,
+    KC_GRV,  KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,           KC_F23,
+    KC_TAB,  KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,           KC_F24,
+    CAPS_NAV, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, MOD_SCLN, MOD_QUOT, KC_ENT,                     KC_F21,
+    KC_LSFT,           KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     COMM_HYP, KC_DOT,  MOD_SLSH, KC_RSFT,           KC_UP,   KC_F22,
     HYPR_KEY, KC_LOPT,  KC_LCMD,                                NAV_SPC,                              KC_RCMD, MO(1),             KC_LEFT, KC_DOWN, KC_RIGHT),
 
 // ============================================
@@ -165,14 +170,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______,  _______,                                _______,                               _______, MO(1),             RM_NEXT, RM_VALD, RM_HUEU),
 
 // ============================================
-// LAYER 2: Windows Base
+// LAYER 2: Windows Base (same right-column free-key transport as Mac)
 // ============================================
 [2] = LAYOUT_ansi_84(
-    KC_ESC,  KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,   KC_F10,  KC_F11,  KC_F12,  WIN_PRTA, KC_INS,  MY_HYPR(KC_N),
-    KC_GRV,  KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,           MY_HYPR(KC_M),
-    KC_TAB,  KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,           MY_HYPR(KC_COMM),
-    CAPS_NAV, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, MOD_SCLN, MOD_QUOT, KC_ENT,                     MY_HYPR(KC_DOT),
-    KC_LSFT,           KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     COMM_HYP, KC_DOT,  MOD_SLSH, KC_RSFT,           KC_UP,   MY_HYPR(KC_SLSH),
+    KC_ESC,  KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,   KC_F10,  KC_F11,  KC_F12,  WIN_PRTA, KC_INS,  KC_F18,
+    KC_GRV,  KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,           KC_F23,
+    KC_TAB,  KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,           KC_F24,
+    CAPS_NAV, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, MOD_SCLN, MOD_QUOT, KC_ENT,                     KC_F21,
+    KC_LSFT,           KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     COMM_HYP, KC_DOT,  MOD_SLSH, KC_RSFT,           KC_UP,   KC_F22,
     MY_HYPR_T(KC_NO), KC_LWIN,  KC_LALT,                                NAV_SPC,                              KC_RALT, MO(3),             KC_LEFT, KC_DOWN, KC_RIGHT),
 
 // ============================================
@@ -213,10 +218,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Right hand: YUIO = Home/PgUp/PgDn/End, HJKL = Ctrl+HJKL (vim-tmux-navigator)
 // Left hand:  App launchers via MY_HYPR(KC_x) → Hammerspoon toggleApp
 //             R = F13 (Raycast), W = F19 (WezTerm dialog)
-//             C = F17 (float cycle), X = F18 (float fullscreen), Z = F20 (slow paste)
+//             C = F17 (float cycle), X = Hyper+M (maximize toggle), Z = F20 (slow paste)
 //             G = KC_F16 → window mode modal trigger (Hammerspoon)
-// Hyper cluster (top-right physical keys, Layer 0 passthrough):
-//             DEL=Hyper+N, HOME=Hyper+M, END=Hyper+,, PGUP=Hyper+., PGDN=Hyper+/
+// Right-column free keys (Layer 0): DEL=F18, HOME=F23, END=F24, PGUP=F21, PGDN=F22
 // AeroSpace removed: Space+1-9/Tab/[/]/T (Ctrl+Alt+…) workspace keys retired → transparent.
 // ============================================
 [6] = LAYOUT_ansi_84(
@@ -224,7 +228,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______, _______, _______, _______,          _______,
     _______,     _______,  KC_F19,   MY_HYPR(KC_E), KC_F13, _______,   KC_HOME, KC_PGUP, KC_PGDN,  KC_END,  _______, _______,      _______,      _______,          _______,
     _______, MY_HYPR(KC_A), MY_HYPR(KC_S), MY_HYPR(KC_D), _______, KC_F16, CTRL_H, CTRL_J, CTRL_K, CTRL_L, _______, _______, _______,  _______,
-    _______,           KC_F20,   KC_F18,   KC_F17,   MY_HYPR(KC_V), _______, _______, _______, _______, _______, _______, _______,          _______, _______,
+    _______,           KC_F20,   MY_HYPR(KC_M), KC_F17,   MY_HYPR(KC_V), _______, _______, _______, _______, _______, _______, _______,          _______, _______,
     _______, _______,  _______,                                _______,                               _______, _______,          _______, _______, _______),
 
 // ============================================
