@@ -152,13 +152,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //   PGUP=Shift+F18→alt+shift+k | PGDN=Ctrl+F18→alt+shift+j
 //   INS=Ctrl+Shift+F18→alt+1 (focus_agent rank 1)
 // PrtSc slot: Cmd+Shift+5 (macOS screenshot UI), was Cmd+Shift+4.
+// Scheme A+: Space is a plain KC_SPC again (was NAV_SPC = LT(6, KC_SPC)) — the
+// Space-Fn layer is retired, see Layer 6 below. Caps, the comma Hyper producer
+// (COMM_HYP) and the left-Ctrl Hyper producer (HYPR_KEY) are unchanged.
 [0] = LAYOUT_ansi_84(
     KC_ESC,  KC_F1,    KC_F2,    TD(TD_F3_MCTL), KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, TD(TD_F10_MUTE), KC_F11, KC_F12, G(S(KC_5)), C(S(KC_F18)), KC_F18,
     KC_GRV,  KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,           A(KC_F18),
     KC_TAB,  KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,           G(KC_F18),
     CAPS_NAV, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, MOD_SCLN, MOD_QUOT, KC_ENT,                     S(KC_F18),
     KC_LSFT,           KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     COMM_HYP, KC_DOT,  MOD_SLSH, KC_RSFT,           KC_UP,   C(KC_F18),
-    HYPR_KEY, KC_LOPT,  KC_LCMD,                                NAV_SPC,                              KC_RCMD, MO(1),             KC_LEFT, KC_DOWN, KC_RIGHT),
+    HYPR_KEY, KC_LOPT,  KC_LCMD,                                KC_SPC,                               KC_RCMD, MO(1),             KC_LEFT, KC_DOWN, KC_RIGHT),
 
 // ============================================
 // LAYER 1: Mac Fn (media keys on F-row)
@@ -216,21 +219,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______,  _______,                                _______,                               _______, _______,          _______, _______, _______),
 
 // ============================================
-// LAYER 6: Space Nav (Hold Space)
-// Right hand: YUIO = Home/PgUp/PgDn/End, HJKL = Ctrl+HJKL (vim-tmux-navigator)
-// Left hand:  App launchers via MY_HYPR(KC_x) → Hammerspoon toggleApp
-//             R = F13 (Raycast), W = F19 (WezTerm dialog)
-//             C = F17 (float cycle), X = Hyper+M (maximize toggle), Z = F20 (slow paste)
-//             G = KC_F16 → window mode modal trigger (Hammerspoon)
-// Right-column F18 chords (Layer 0): DEL=F18, HOME=Alt+F18, END=Cmd+F18, PGUP=Shift+F18, PGDN=Ctrl+F18, INS=Ctrl+Shift+F18
-// AeroSpace removed: Space+1-9/Tab/[/]/T (Ctrl+Alt+…) workspace keys retired → transparent.
+// LAYER 6: RETIRED — Space Nav removed (scheme A+)
+// ============================================
+// Scheme A+ (candidate-schemes.md § 1+ lines 470-473): Space-Fn is gone in full.
+// Layer 0's Space is a plain KC_SPC again, so nothing reaches this layer from the
+// Mac base layer; every position is transparent. The layer is kept (rather than
+// deleted) to preserve layer numbering for layers 7 and the Windows base layer.
+//
+// What used to live here, and where the function went under A+:
+//   YUIO = Home/PgUp/PgDn/End      → Hyper+Y/U/I/O
+//   HJKL = Ctrl+HJKL               → retired; Caps+HJKL stays arrows (A+ keeps the
+//                                    Ctrl+HJKL→arrow overrides; the four consumers rebind)
+//   R = F13 (Raycast)              → Hyper+Space       W = F19 (WezTerm dialog) → Hyper+Q
+//   Z = F20 (slow paste)           → Hyper+Z           X = Hyper+M (maximize)   → unchanged mask
+//   E/D = Hyper+E / Hyper+D        → unchanged mask
+//   G = F16 (window mode), C = F17 (float cycle), A/S/V = Hyper+A/S/V → dropped
 // ============================================
 [6] = LAYOUT_ansi_84(
-    _______, _______,  _______,  MAC_TASK, _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______, _______, _______,
-    _______, _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______, _______, _______, _______,          _______,
-    _______,     _______,  KC_F19,   MY_HYPR(KC_E), KC_F13, _______,   KC_HOME, KC_PGUP, KC_PGDN,  KC_END,  _______, _______,      _______,      _______,          _______,
-    _______, MY_HYPR(KC_A), MY_HYPR(KC_S), MY_HYPR(KC_D), _______, KC_F16, CTRL_H, CTRL_J, CTRL_K, CTRL_L, _______, _______, _______,  _______,
-    _______,           KC_F20,   MY_HYPR(KC_M), KC_F17,   MY_HYPR(KC_V), _______, _______, _______, _______, _______, _______, _______,          _______, _______,
+    _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______, _______, _______,
+    _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______,          _______,
+    _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______,          _______,
+    _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______,                   _______,
+    _______,           _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______,          _______, _______,
     _______, _______,  _______,                                _______,                               _______, _______,          _______, _______, _______),
 
 // ============================================
