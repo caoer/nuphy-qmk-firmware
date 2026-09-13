@@ -148,12 +148,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Right column = F18 chords; WezTerm expands them to herdr chords (see common.lua).
 // macOS drops F21-F24 (virtual keycodes end at kVK_F20) and PC-Insert — all
 // slots ride the proven F18 transport with modifiers instead.
-//   DEL=F18→prefix+z zoom | HOME=Alt+F18→alt+up | END=Cmd+F18→alt+down
-//   PGUP=Shift+F18→alt+shift+k | PGDN=Ctrl+F18→alt+shift+j
+//   DEL=F18→prefix+z zoom | HOME=Alt+F18→alt+shift+k | END=Cmd+F18→alt+shift+j
+//   PGUP=Shift+F18→alt+up | PGDN=Ctrl+F18→alt+down
+//   PRTSC=Cmd+Alt+F18→prefix+b toggle sidebar (was Cmd+Shift+5 screenshot)
 //   INS=Ctrl+Shift+F18→alt+1 (focus_agent rank 1)
-// PrtSc slot: Cmd+Shift+5 (macOS screenshot UI), was Cmd+Shift+4.
 [0] = LAYOUT_ansi_84(
-    KC_ESC,  KC_F1,    KC_F2,    TD(TD_F3_MCTL), KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, TD(TD_F10_MUTE), KC_F11, KC_F12, G(S(KC_5)), C(S(KC_F18)), KC_F18,
+    KC_ESC,  KC_F1,    KC_F2,    TD(TD_F3_MCTL), KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, TD(TD_F10_MUTE), KC_F11, KC_F12, G(A(KC_F18)), C(S(KC_F18)), KC_F18,
     KC_GRV,  KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,           A(KC_F18),
     KC_TAB,  KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,           G(KC_F18),
     CAPS_NAV, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, MOD_SCLN, MOD_QUOT, KC_ENT,                     S(KC_F18),
