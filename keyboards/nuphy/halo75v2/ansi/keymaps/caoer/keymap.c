@@ -270,10 +270,44 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //
 // Negative mod GUI: suppresses override when Cmd is held, so
 // Hyper+HJKL (which includes Ctrl) sends Hyper+letter, not Hyper+arrow.
-const key_override_t nav_h = ko_make_with_layers_negmods_and_options(MOD_MASK_CTRL, KC_H, KC_LEFT, ~0, MOD_MASK_GUI, ko_options_default);
-const key_override_t nav_j = ko_make_with_layers_negmods_and_options(MOD_MASK_CTRL, KC_J, KC_DOWN, ~0, MOD_MASK_GUI, ko_options_default);
-const key_override_t nav_k = ko_make_with_layers_negmods_and_options(MOD_MASK_CTRL, KC_K, KC_UP, ~0, MOD_MASK_GUI, ko_options_default);
-const key_override_t nav_l = ko_make_with_layers_negmods_and_options(MOD_MASK_CTRL, KC_L, KC_RGHT, ~0, MOD_MASK_GUI, ko_options_default);
+//
+// Report ordering (2026-09-13): stock key overrides put "Ctrl released" and
+// "Left pressed" into ONE HID report and trust the host to read the modifier
+// byte first. macOS with Karabiner grabbing the board (seen over Bluetooth)
+// processes the key first, so the app receives Ctrl+Left instead of Left.
+// custom_action runs after the Ctrl suppression is set and before the arrow
+// is added, so flushing a report there makes the release its own packet.
+// Deactivation ("Left up" + "Ctrl back") is left alone: key-first order is
+// harmless there.
+static bool nav_flush_ctrl(bool activated, void *context) {
+    (void)context;
+    if (activated) {
+        send_keyboard_report();
+        wait_ms(5); // let USB / the wireless module ship it before the next report
+    }
+    return true;
+}
+
+// ko_make_with_layers_negmods_and_options(MOD_MASK_CTRL, key, arrow, ~0, MOD_MASK_GUI, ko_options_default)
+// with .custom_action wired — the helper macro hardcodes it to NULL.
+#define NAV_KO(trigger_key, replacement_key)      \
+    ((const key_override_t){                      \
+        .trigger_mods      = MOD_MASK_CTRL,       \
+        .layers            = ~0,                  \
+        .suppressed_mods   = MOD_MASK_CTRL,       \
+        .options           = ko_options_default,  \
+        .negative_mod_mask = MOD_MASK_GUI,        \
+        .custom_action     = nav_flush_ctrl,      \
+        .context           = NULL,                \
+        .trigger           = (trigger_key),       \
+        .replacement       = (replacement_key),   \
+        .enabled           = NULL,                \
+    })
+
+const key_override_t nav_h = NAV_KO(KC_H, KC_LEFT);
+const key_override_t nav_j = NAV_KO(KC_J, KC_DOWN);
+const key_override_t nav_k = NAV_KO(KC_K, KC_UP);
+const key_override_t nav_l = NAV_KO(KC_L, KC_RGHT);
 
 const key_override_t *key_overrides[] = {
     &nav_h, &nav_j, &nav_k, &nav_l,
