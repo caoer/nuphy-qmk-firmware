@@ -58,11 +58,11 @@
 #define HYPR_KEY (QK_USER + 5)
 
 // ============================================
-// SPACE NAV LAYER (Layer 6)
+// SPACE NAV LAYER (Layer 6) — RETIRED (scheme A+)
 // ============================================
-// Space = Nav layer 6 when held, Space when tapped
-// Layer 6: YUIO = Home/PgUp/PgDn/End, HJKL = Ctrl+HJKL, app launchers
-#define NAV_SPC LT(6, KC_SPC)
+// Space-Fn is gone on EVERY base layer (advisor ruling 5): layer 0 and layer 2
+// both carry a plain KC_SPC, so LT(6, KC_SPC) has no user left and the NAV_SPC
+// macro is removed along with the per-key tap/hold tuning it needed.
 
 // ============================================
 // TAP DANCE DEFINITIONS
@@ -152,13 +152,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //   PGUP=Shift+F18→alt+up | PGDN=Ctrl+F18→alt+down
 //   PRTSC=Cmd+Alt+F18→prefix+b toggle sidebar (was Cmd+Shift+5 screenshot)
 //   INS=Ctrl+Shift+F18→alt+1 (focus_agent rank 1)
+// Scheme A+: Space is a plain KC_SPC again (was NAV_SPC = LT(6, KC_SPC)) — the
+// Space-Fn layer is retired, see Layer 6 below. Caps, the comma Hyper producer
+// (COMM_HYP) and the left-Ctrl Hyper producer (HYPR_KEY) are unchanged.
 [0] = LAYOUT_ansi_84(
     KC_ESC,  KC_F1,    KC_F2,    TD(TD_F3_MCTL), KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, TD(TD_F10_MUTE), KC_F11, KC_F12, G(A(KC_F18)), C(S(KC_F18)), KC_F18,
     KC_GRV,  KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,           A(KC_F18),
     KC_TAB,  KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,           G(KC_F18),
     CAPS_NAV, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, MOD_SCLN, MOD_QUOT, KC_ENT,                     S(KC_F18),
     KC_LSFT,           KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     COMM_HYP, KC_DOT,  MOD_SLSH, KC_RSFT,           KC_UP,   C(KC_F18),
-    HYPR_KEY, KC_LOPT,  KC_LCMD,                                NAV_SPC,                              KC_RCMD, MO(1),             KC_LEFT, KC_DOWN, KC_RIGHT),
+    HYPR_KEY, KC_LOPT,  KC_LCMD,                                KC_SPC,                               KC_RCMD, MO(1),             KC_LEFT, KC_DOWN, KC_RIGHT),
 
 // ============================================
 // LAYER 1: Mac Fn (media keys on F-row)
@@ -174,13 +177,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ============================================
 // LAYER 2: Windows Base (same right-column F18-chord transport as Mac)
 // ============================================
+// Scheme A+ (advisor ruling 5): Space is a plain KC_SPC here too — it was
+// NAV_SPC = LT(6, KC_SPC), which after Layer 6 was emptied only bought a 150 ms
+// tap/hold wait before an all-transparent layer. No Space layer-tap remains on
+// any base layer.
 [2] = LAYOUT_ansi_84(
     KC_ESC,  KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,   KC_F10,  KC_F11,  KC_F12,  WIN_PRTA, C(S(KC_F18)), KC_F18,
     KC_GRV,  KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,           A(KC_F18),
     KC_TAB,  KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,           G(KC_F18),
     CAPS_NAV, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, MOD_SCLN, MOD_QUOT, KC_ENT,                     S(KC_F18),
     KC_LSFT,           KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     COMM_HYP, KC_DOT,  MOD_SLSH, KC_RSFT,           KC_UP,   C(KC_F18),
-    MY_HYPR_T(KC_NO), KC_LWIN,  KC_LALT,                                NAV_SPC,                              KC_RALT, MO(3),             KC_LEFT, KC_DOWN, KC_RIGHT),
+    MY_HYPR_T(KC_NO), KC_LWIN,  KC_LALT,                                KC_SPC,                               KC_RALT, MO(3),             KC_LEFT, KC_DOWN, KC_RIGHT),
 
 // ============================================
 // LAYER 3: Windows Fn (unchanged from original)
@@ -216,21 +223,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______,  _______,                                _______,                               _______, _______,          _______, _______, _______),
 
 // ============================================
-// LAYER 6: Space Nav (Hold Space)
-// Right hand: YUIO = Home/PgUp/PgDn/End, HJKL = Ctrl+HJKL (vim-tmux-navigator)
-// Left hand:  App launchers via MY_HYPR(KC_x) → Hammerspoon toggleApp
-//             R = F13 (Raycast), W = F19 (WezTerm dialog)
-//             C = F17 (float cycle), X = Hyper+M (maximize toggle), Z = F20 (slow paste)
-//             G = KC_F16 → window mode modal trigger (Hammerspoon)
-// Right-column F18 chords (Layer 0): DEL=F18, HOME=Alt+F18, END=Cmd+F18, PGUP=Shift+F18, PGDN=Ctrl+F18, INS=Ctrl+Shift+F18
-// AeroSpace removed: Space+1-9/Tab/[/]/T (Ctrl+Alt+…) workspace keys retired → transparent.
+// LAYER 6: RETIRED — Space Nav removed (scheme A+)
+// ============================================
+// Scheme A+ (candidate-schemes.md § 1+ lines 470-473): Space-Fn is gone in full.
+// Layer 0's Space is a plain KC_SPC again, so nothing reaches this layer from the
+// Mac base layer; every position is transparent. The layer is kept (rather than
+// deleted) to preserve layer numbering for layers 7 and the Windows base layer.
+//
+// What used to live here, and where the function went under A+:
+//   YUIO = Home/PgUp/PgDn/End      → Hyper+Y/U/I/O
+//   HJKL = Ctrl+HJKL               → retired; Caps+HJKL stays arrows (A+ keeps the
+//                                    Ctrl+HJKL→arrow overrides; the four consumers rebind)
+//   R = F13 (Raycast)              → Hyper+Space       W = F19 (WezTerm dialog) → Hyper+Q
+//   Z = F20 (slow paste)           → Hyper+Z           X = Hyper+M (maximize)   → unchanged mask
+//   E/D = Hyper+E / Hyper+D        → unchanged mask
+//   G = F16 (window mode), C = F17 (float cycle), A/S/V = Hyper+A/S/V → dropped
 // ============================================
 [6] = LAYOUT_ansi_84(
-    _______, _______,  _______,  MAC_TASK, _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______, _______, _______,
-    _______, _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______, _______, _______, _______,          _______,
-    _______,     _______,  KC_F19,   MY_HYPR(KC_E), KC_F13, _______,   KC_HOME, KC_PGUP, KC_PGDN,  KC_END,  _______, _______,      _______,      _______,          _______,
-    _______, MY_HYPR(KC_A), MY_HYPR(KC_S), MY_HYPR(KC_D), _______, KC_F16, CTRL_H, CTRL_J, CTRL_K, CTRL_L, _______, _______, _______,  _______,
-    _______,           KC_F20,   MY_HYPR(KC_M), KC_F17,   MY_HYPR(KC_V), _______, _______, _______, _______, _______, _______, _______,          _______, _______,
+    _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______, _______, _______,
+    _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______,          _______,
+    _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______, _______,          _______,
+    _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______,                   _______,
+    _______,           _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______, _______, _______,          _______, _______,
     _______, _______,  _______,                                _______,                               _______, _______,          _______, _______, _______),
 
 // ============================================
@@ -302,7 +316,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false;  // We handle this key completely
 
-        case NAV_SPC:  // Space with nav layer
         case KC_SPC:
             if (record->event.pressed && comm_hyp_held && !comm_hyp_activated) {
                 // Special case: comma + space = ", " (not Hyper+Space)
@@ -428,34 +441,13 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 
 // ============================================
-// PER-KEY TAPPING TERM
+// PER-KEY TAPPING TERM / QUICK TAP TERM — REMOVED (scheme A+)
 // ============================================
-// Space needs a shorter tapping term for responsive typing.
-// Caps Nav and other mod-taps keep the default 200ms.
-uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
-    switch (keycode) {
-        case NAV_SPC:
-            return 150;  // 150ms: faster space tap detection
-        default:
-            return TAPPING_TERM;  // 200ms for everything else
-    }
-}
-
-// ============================================
-// PER-KEY QUICK TAP TERM
-// ============================================
-// Disable quick-tap for Space: hold must always enter Layer 6, even
-// immediately after a Space tap. Without this, tapping Space then
-// holding within 120ms bypasses Layer 6 entirely (QUICK_TAP_TERM
-// fires instant tap, no hold detection).
-uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
-    switch (keycode) {
-        case NAV_SPC:
-            return 0;   // never skip hold detection for Space
-        default:
-            return QUICK_TAP_TERM;  // 120ms for everything else
-    }
-}
+// Both overrides existed only for NAV_SPC (Space's 150 ms tapping term and its
+// quick-tap disable). With Space plain on every base layer their sole case is
+// gone and each function would return nothing but the global default, so both
+// are removed: Caps Nav and the punctuation mod-taps keep TAPPING_TERM (200 ms)
+// and QUICK_TAP_TERM (120 ms) exactly as before.
 
 // ============================================
 // SUSPEND/WAKEUP: Reset all custom state
@@ -474,12 +466,10 @@ void suspend_wakeup_init_user(void) {
 // PER-KEY PERMISSIVE HOLD
 // ============================================
 // Enabled for mod-tap keys (faster modifier activation when rolling).
-// Disabled for Space to prevent false nav-layer triggers during typing.
 // Caps Nav enabled: deliberate hold should activate layer immediately.
+// The NAV_SPC exception is gone with Space-Fn — Space is no longer a mod-tap.
 bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case NAV_SPC:
-            return false;  // Space: don't activate nav layer on fast rolls
         default:
             return true;   // Caps Nav, punctuation mods: activate on rolls
     }
