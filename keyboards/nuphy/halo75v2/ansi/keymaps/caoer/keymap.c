@@ -341,10 +341,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 if (comm_hyp_activated) {
                     // Was used as Hyper, unregister all mods
                     unregister_mods(MY_HYPR_MODS);
-                } else {
-                    // Not used as Hyper, send comma
+                } else if (comm_hyp_held) {
+                    // Plain tap: nothing consumed the comma while it was down
                     tap_code(KC_COMM);
                 }
+                // else: the ", " roll below already sent the comma on Space
+                // press and cleared comm_hyp_held — sending it again here
+                // typed ", ," whenever Space went down before comma came up.
                 comm_hyp_held = false;
                 comm_hyp_activated = false;
             }
